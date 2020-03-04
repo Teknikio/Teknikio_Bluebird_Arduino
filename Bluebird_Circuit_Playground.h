@@ -21,52 +21,38 @@
 #include "utility/Adafruit_CPlay_NeoPixel.h"
 #include "utility/Adafruit_CPlay_Speaker.h"
 #include "utility/CP_Firmata.h"
+#include "utility/ICM20600.h"
 
 #ifndef NOT_AN_INTERRUPT // Not defined in Arduino 1.0.5
   #define NOT_AN_INTERRUPT -1 ///< Pin is not on an interrupt
 #endif
 
-#ifdef __AVR__ // Circuit Playground 'classic'
- #define CPLAY_CAPSENSE_SHARED   30  ///< capacitive sense pin
- #define CPLAY_REDLED           13 ///< red LED pin
- #define CPLAY_NEOPIXELPIN      17 ///< neopixel pin
- #define CPLAY_SLIDESWITCHPIN   21 ///< slide switch pin
- #define CPLAY_LEFTBUTTON        4 ///< left button pin
- #define CPLAY_RIGHTBUTTON      19 ///< right button pin
- #define CPLAY_LIGHTSENSOR      A5 ///< light sensor pin
- #define CPLAY_THERMISTORPIN    A0 ///< thermistor pin
- #define CPLAY_SOUNDSENSOR      A4 ///< sound sensor pin
- #define CPLAY_BUZZER            5 ///< buzzer pin
- #define CPLAY_LIS3DH_CS         8 ///< LIS3DH chip select pin
- #define CPLAY_LIS3DH_INTERRUPT  7 ///< LIS3DH interrupt pin
- #define CPLAY_LIS3DH_ADDRESS    0x18 ///< LIS3DH I2C address
-#elif defined(ARDUINO_NRF52840_CIRCUITPLAY)
+#ifdef defined(ARDUINO_NRF52840_CIRCUITPLAY)
   #include <math.h>
- #define CPLAY_CAPSENSE_SHARED  255 ///< we use ground instead of capacitive sense pin
- #define CPLAY_LEFTBUTTON        4 ///< left button pin
- #define CPLAY_RIGHTBUTTON       5 ///< right button pin
- #define CPLAY_SLIDESWITCHPIN    7 ///< slide switch pin
- #define CPLAY_NEOPIXELPIN       8 ///< neopixel pin
- #define CPLAY_REDLED           13 ///< red led pin
- #define CPLAY_BUZZER           A0 ///< buzzer pin
- #define CPLAY_LIGHTSENSOR      A8 ///< light sensor pin
- #define CPLAY_THERMISTORPIN    A9 ///< thermistor pin
- #define CPLAY_LIS3DH_CS        -1 ///< LIS3DH chip select pin
- #define CPLAY_LIS3DH_INTERRUPT 27 ///< LIS3DH interrupt pin
- #define CPLAY_LIS3DH_ADDRESS   0x19 ///< LIS3DH I2C address
+  #define CPLAY_CAPSENSE_SHARED  255 ///< we use ground instead of capacitive sense pin
+  #define CPLAY_LEFTBUTTON        4 ///< left button pin
+  #define CPLAY_RIGHTBUTTON       5 ///< right button pin
+  #define CPLAY_SLIDESWITCHPIN    7 ///< slide switch pin
+  #define CPLAY_NEOPIXELPIN       8 ///< neopixel pin
+  #define CPLAY_REDLED           13 ///< red led pin
+  #define CPLAY_BUZZER           A0 ///< buzzer pin
+  #define CPLAY_LIGHTSENSOR      A8 ///< light sensor pin
+  #define CPLAY_THERMISTORPIN    A9 ///< thermistor pin
+  #define CPLAY_LIS3DH_CS        -1 ///< LIS3DH chip select pin
+  #define CPLAY_LIS3DH_INTERRUPT 27 ///< LIS3DH interrupt pin
+  #define CPLAY_LIS3DH_ADDRESS   0x19 ///< LIS3DH I2C address
 #elif defined(ARDUINO_NRF52_ADAFRUIT)
-#define CPLAY_LEFTBUTTON        4  ///< left button pin
-#define CPLAY_RIGHTBUTTON       5 ///< right button pin
-#define CPLAY_SLIDESWITCHPIN    7 ///< slide switch pin
-#define CPLAY_NEOPIXELPIN      47 ///< neopixel pin
-#define CPLAY_REDLED           13 ///< red led pin
-#define CPLAY_BUZZER           46 ///< buzzer pin
-#define CPLAY_LIGHTSENSOR      A4 ///< light sensor pin
-#define CPLAY_THERMISTORPIN    A9 ///< thermistor pin
-#define CPLAY_SOUNDSENSOR      -1 ///< TBD I2S
-#define CPLAY_LIS3DH_CS        -1 ///< LIS3DH chip select pin
-#define CPLAY_LIS3DH_INTERRUPT 42 ///< LIS3DH interrupt pin
-#define CPLAY_LIS3DH_ADDRESS   0x19 ///< LIS3DH I2C address
+  #define CPLAY_LEFTBUTTON        4  ///< left button pin
+  #define CPLAY_RIGHTBUTTON       5 ///< right button pin
+  #define CPLAY_SLIDESWITCHPIN    7 ///< slide switch pin
+  #define CPLAY_NEOPIXELPIN      47 ///< neopixel pin
+  #define CPLAY_REDLED           13 ///< red led pin
+  #define CPLAY_BUZZER           46 ///< buzzer pin
+  #define CPLAY_LIGHTSENSOR      A4 ///< light sensor pin
+  #define CPLAY_THERMISTORPIN    A9 ///< thermistor pin
+  #define CPLAY_SOUNDSENSOR      -1 ///< TBD I2S
+  #define PIN_WIRE_INT          (45)
+  #define COLOR_ENABLE          (30)
 #else
   #define CPLAY_LEFTBUTTON        4  ///< left button pin
   #define CPLAY_RIGHTBUTTON       5 ///< right button pin
@@ -79,6 +65,7 @@
   #define CPLAY_LIGHTSENSOR      A8 ///< light sensor pin
   #define CPLAY_THERMISTORPIN    A9 ///< thermistor pin
   #define CPLAY_SOUNDSENSOR      A4 ///< TBD I2S
+  #define COLOR_ENABLE          (30)
   #define CPLAY_LIS3DH_CS        -1 ///< LIS3DH chip select pin
   #define CPLAY_LIS3DH_INTERRUPT 27 ///< LIS3DH interrupt pin
   #define CPLAY_LIS3DH_ADDRESS   0x19 ///< LIS3DH I2C address
@@ -111,6 +98,7 @@ class Bluebird_CircuitPlayground {
 
   Adafruit_CPlay_NeoPixel strip; ///< the neopixel strip object
   Adafruit_CPlay_Speaker speaker; ///< the speaker object
+  ICM20600 imu;
 
 
   bool slideSwitch(void);
@@ -121,9 +109,9 @@ class Bluebird_CircuitPlayground {
 //  float temperatureF(void);
 
   // Accelerometer
-//  float motionX(void);
-//  float motionY(void);
-//  float motionZ(void);
+  int16_t motionX(void);
+  int16_t motionY(void);
+  int16_t motionZ(void);
 
 /**************************************************************************/
 /*! 

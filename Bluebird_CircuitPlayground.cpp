@@ -37,10 +37,17 @@
 */
 /**************************************************************************/
 bool Bluebird_CircuitPlayground::begin(uint8_t brightness) {
+
+  // Pin Initialisation
   pinMode(CPLAY_BUZZER, OUTPUT);
+  pinMode(PIN_WIRE_INT,INPUT);
+  pinMode(COLOR_ENABLE,OUTPUT);
+  
   // since we aren't calling speaker.begin() anymore, do this here
-  pinMode(CPLAY_SPEAKER_SHUTDOWN, OUTPUT);
-  digitalWrite(CPLAY_SPEAKER_SHUTDOWN, HIGH);
+  //pinMode(CPLAY_SPEAKER_SHUTDOWN, OUTPUT);
+  //digitalWrite(CPLAY_SPEAKER_SHUTDOWN, HIGH);
+
+  Wire.begin();
 
   strip = Adafruit_CPlay_NeoPixel();
   strip.updateType(NEO_GRB + NEO_KHZ800);
@@ -52,6 +59,10 @@ bool Bluebird_CircuitPlayground::begin(uint8_t brightness) {
   strip.begin();
   strip.show(); // Initialize all pixels to 'off'
   strip.setBrightness(brightness);
+
+  imu = ICM20600(true);
+  imu.initialize();
+
 
   //return lis.begin(CPLAY_LIS3DH_ADDRESS);
   return true;
@@ -184,5 +195,15 @@ bool Bluebird_CircuitPlayground::isExpress(void) {
 #endif
 }
 
+
+int16_t Bluebird_CircuitPlayground::motionX(){
+  return imu.getAccelerationX();
+}
+int16_t Bluebird_CircuitPlayground::motionY(){
+  return imu.getAccelerationY();
+}
+int16_t Bluebird_CircuitPlayground::motionZ(){
+  return imu.getAccelerationZ();
+}
 // instantiate static
 Bluebird_CircuitPlayground bluebirdCircuitPlayground;
