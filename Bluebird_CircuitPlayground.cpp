@@ -39,20 +39,22 @@
 bool Bluebird_CircuitPlayground::begin(uint8_t brightness) {
 
   // Pin Initialisation
-  pinMode(CPLAY_BUZZER, OUTPUT);
-  pinMode(PIN_WIRE_INT,INPUT);
-  pinMode(COLOR_ENABLE,OUTPUT);
+  pinMode(BLUEBIRD_BUZZER, OUTPUT);
+  pinMode(BLUEBIRD_COLOR_ENABLE,OUTPUT);
+  pinMode(BLUEBIRD_WIRE_INT,INPUT);
+  pinMode(BLUEBIRD_LIGHTSENSOR,INPUT);
   
-  // since we aren't calling speaker.begin() anymore, do this here
-  //pinMode(CPLAY_SPEAKER_SHUTDOWN, OUTPUT);
-  //digitalWrite(CPLAY_SPEAKER_SHUTDOWN, HIGH);
+
+  digitalWrite(BLUEBIRD_BUZZER      , LOW); 
+  digitalWrite(BLUEBIRD_COLOR_ENABLE, LOW); 
 
   Wire.begin();
 
+  //strip = Adafruit_CPlay_NeoPixel(1,BLUEBIRD_NEOPIXELPIN,NEO_GRB + NEO_KHZ800);
   strip = Adafruit_CPlay_NeoPixel();
   strip.updateType(NEO_GRB + NEO_KHZ800);
   strip.updateLength(1);
-  strip.setPin(CPLAY_NEOPIXELPIN);
+  strip.setPin(BLUEBIRD_NEOPIXELPIN);
 
 //  lis = Adafruit_CPlay_LIS3DH(&Wire1); // i2c on wire1
 
@@ -60,23 +62,12 @@ bool Bluebird_CircuitPlayground::begin(uint8_t brightness) {
   strip.show(); // Initialize all pixels to 'off'
   strip.setBrightness(brightness);
 
-  imu = ICM20600(true);
-  imu.initialize();
+  icm20600 = ICM20600(BLUEBIRD_ICM_ADDRESS);
+  icm20600.initialize();
 
 
   //return lis.begin(CPLAY_LIS3DH_ADDRESS);
   return true;
-}
-
-
-/**************************************************************************/
-/*!
-    @brief read the slide switch
-    @returns true if slide switch in set, false if not
-*/
-/**************************************************************************/
-bool Bluebird_CircuitPlayground::slideSwitch(void) {
-  return digitalRead(CPLAY_SLIDESWITCHPIN);
 }
 
 /**************************************************************************/
@@ -91,7 +82,7 @@ bool Bluebird_CircuitPlayground::slideSwitch(void) {
 /**************************************************************************/
 void Bluebird_CircuitPlayground::playTone(
   uint16_t freq, uint16_t time, bool wait) {
-  tone(CPLAY_BUZZER, freq, time);
+  tone(BLUEBIRD_BUZZER, freq, time);
   delay(time); // time argument to tone() isn't working, so...
   if(wait) delay(time);
 }
@@ -107,17 +98,12 @@ void Bluebird_CircuitPlayground::playTone(
 */
 /**************************************************************************/
 uint16_t Bluebird_CircuitPlayground::lightSensor(void) {
-  return analogRead(CPLAY_LIGHTSENSOR);
-}
-
-/**************************************************************************/
-/*!
-    @brief turn on or off the red LED on pin #13
-    @param  v pass true to turn LED on, false to turn LED off
-*/
-/**************************************************************************/
-void Bluebird_CircuitPlayground::redLED(bool v) {
-  digitalWrite(CPLAY_REDLED, v);
+  uint16_t tmp_measure = 0;
+  digitalWrite(BLUEBIRD_COLOR_ENABLE, HIGH); 
+  delay(50);
+  tmp_measure = analogRead(BLUEBIRD_LIGHTSENSOR);
+  digitalWrite(BLUEBIRD_COLOR_ENABLE, LOW); 
+  return tmp_measure;
 }
 
 /**************************************************************************/
@@ -197,13 +183,24 @@ bool Bluebird_CircuitPlayground::isExpress(void) {
 
 
 int16_t Bluebird_CircuitPlayground::motionX(){
-  return imu.getAccelerationX();
+  return icm20600.getAccelerationX();
 }
 int16_t Bluebird_CircuitPlayground::motionY(){
-  return imu.getAccelerationY();
+  return icm20600.getAccelerationY();
 }
 int16_t Bluebird_CircuitPlayground::motionZ(){
-  return imu.getAccelerationZ();
+  return icm20600.getAccelerationZ();
 }
+
+int16_t Bluebird_CircuitPlayground::rotationX(){
+  return icm20600.getGyroscopeX();
+}
+int16_t Bluebird_CircuitPlayground::rotationY(){
+  return icm20600.getGyroscopeY();
+}
+int16_t Bluebird_CircuitPlayground::rotationZ(){
+  return icm20600.getGyroscopeZ();
+}
+
 // instantiate static
 Bluebird_CircuitPlayground bluebirdCircuitPlayground;

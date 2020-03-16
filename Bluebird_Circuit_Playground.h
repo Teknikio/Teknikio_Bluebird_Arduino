@@ -19,7 +19,6 @@
 
 #include <Arduino.h>
 #include "utility/Adafruit_CPlay_NeoPixel.h"
-#include "utility/Adafruit_CPlay_Speaker.h"
 #include "utility/CP_Firmata.h"
 #include "utility/ICM20600.h"
 
@@ -27,57 +26,13 @@
   #define NOT_AN_INTERRUPT -1 ///< Pin is not on an interrupt
 #endif
 
-#ifdef defined(ARDUINO_NRF52840_CIRCUITPLAY)
-  #include <math.h>
-  #define CPLAY_CAPSENSE_SHARED  255 ///< we use ground instead of capacitive sense pin
-  #define CPLAY_LEFTBUTTON        4 ///< left button pin
-  #define CPLAY_RIGHTBUTTON       5 ///< right button pin
-  #define CPLAY_SLIDESWITCHPIN    7 ///< slide switch pin
-  #define CPLAY_NEOPIXELPIN       8 ///< neopixel pin
-  #define CPLAY_REDLED           13 ///< red led pin
-  #define CPLAY_BUZZER           A0 ///< buzzer pin
-  #define CPLAY_LIGHTSENSOR      A8 ///< light sensor pin
-  #define CPLAY_THERMISTORPIN    A9 ///< thermistor pin
-  #define CPLAY_LIS3DH_CS        -1 ///< LIS3DH chip select pin
-  #define CPLAY_LIS3DH_INTERRUPT 27 ///< LIS3DH interrupt pin
-  #define CPLAY_LIS3DH_ADDRESS   0x19 ///< LIS3DH I2C address
-#elif defined(ARDUINO_NRF52_ADAFRUIT)
-  #define CPLAY_LEFTBUTTON        4  ///< left button pin
-  #define CPLAY_RIGHTBUTTON       5 ///< right button pin
-  #define CPLAY_SLIDESWITCHPIN    7 ///< slide switch pin
-  #define CPLAY_NEOPIXELPIN      47 ///< neopixel pin
-  #define CPLAY_REDLED           13 ///< red led pin
-  #define CPLAY_BUZZER           46 ///< buzzer pin
-  #define CPLAY_LIGHTSENSOR      A4 ///< light sensor pin
-  #define CPLAY_THERMISTORPIN    A9 ///< thermistor pin
-  #define CPLAY_SOUNDSENSOR      -1 ///< TBD I2S
-  #define PIN_WIRE_INT          (45)
-  #define COLOR_ENABLE          (30)
-#else
-  #define CPLAY_LEFTBUTTON        4  ///< left button pin
-  #define CPLAY_RIGHTBUTTON       5 ///< right button pin
-  #define CPLAY_SLIDESWITCHPIN    7 ///< slide switch pin
-  #define CPLAY_NEOPIXELPIN       8 ///< neopixel pin
-  #define CPLAY_REDLED           13 ///< red led pin
-  #define CPLAY_IR_EMITTER       25 ///< IR emmitter pin
-  #define CPLAY_IR_RECEIVER      26 ///< IR receiver pin
-  #define CPLAY_BUZZER           A0 ///< buzzer pin
-  #define CPLAY_LIGHTSENSOR      A8 ///< light sensor pin
-  #define CPLAY_THERMISTORPIN    A9 ///< thermistor pin
-  #define CPLAY_SOUNDSENSOR      A4 ///< TBD I2S
-  #define COLOR_ENABLE          (30)
-  #define CPLAY_LIS3DH_CS        -1 ///< LIS3DH chip select pin
-  #define CPLAY_LIS3DH_INTERRUPT 27 ///< LIS3DH interrupt pin
-  #define CPLAY_LIS3DH_ADDRESS   0x19 ///< LIS3DH I2C address
-#endif
+#define BLUEBIRD_NEOPIXELPIN  PIN_NEOPIXEL ///< neopixel pin
+#define BLUEBIRD_BUZZER       PIN_BUZZER ///< buzzer pin
+#define BLUEBIRD_LIGHTSENSOR  A4 ///< light sensor pin  
+#define BLUEBIRD_WIRE_INT     PIN_WIRE_INT
+#define BLUEBIRD_COLOR_ENABLE PIN_COLOR_ENABLE
+#define BLUEBIRD_ICM_ADDRESS  false
 
-
-
-#define SERIESRESISTOR 10000 ///< series resistor for thermistor
-#define THERMISTORNOMINAL 10000 ///< resistance of thermistor at 25 degrees C
-#define TEMPERATURENOMINAL 25 ///< temp. for nominal resistance (almost always 25 C)
-
-#define BCOEFFICIENT 3380 ///< The beta coefficient of the thermistor (usually 3000-4000)
 
 /*! 
   @brief Configuration to tune the color sensing logic:
@@ -97,12 +52,8 @@ class Bluebird_CircuitPlayground {
   bool begin(uint8_t brightness=20);
 
   Adafruit_CPlay_NeoPixel strip; ///< the neopixel strip object
-  Adafruit_CPlay_Speaker speaker; ///< the speaker object
-  ICM20600 imu;
+  ICM20600 icm20600;
 
-
-  bool slideSwitch(void);
-  void redLED(bool v);
   void playTone(uint16_t freq, uint16_t time, bool wait=true);
   uint16_t lightSensor(void);
 //  float temperature(void);
@@ -112,6 +63,10 @@ class Bluebird_CircuitPlayground {
   int16_t motionX(void);
   int16_t motionY(void);
   int16_t motionZ(void);
+
+  int16_t rotationX(void);
+  int16_t rotationY(void);
+  int16_t rotationZ(void);
 
 /**************************************************************************/
 /*! 

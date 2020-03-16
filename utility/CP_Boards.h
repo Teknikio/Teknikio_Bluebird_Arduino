@@ -743,7 +743,7 @@ writePort(port, value, bitmask):  Write an 8 bit port.
 // Circuit Playground Bluebird
 #elif defined(ARDUINO_NRF52_ADAFRUIT)
 #define TOTAL_ANALOG_PINS       6
-#define TOTAL_PINS              48 // 14 digital + 6 analog + 2 i2c + 3 spi
+#define TOTAL_PINS              PINS_COUNT // 14 digital + 6 analog + 2 i2c + 3 spi
 #define TOTAL_PORTS             2  // set when TOTAL_PINS > num digitial I/O pins
 #define VERSION_BLINK_PIN       LED_BUILTIN
 //#define PIN_SERIAL1_RX          0 // already defined in zero core variant.h
