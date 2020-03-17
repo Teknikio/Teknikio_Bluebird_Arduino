@@ -1,0 +1,38 @@
+#######################################
+# Syntax Coloring Map For Adafruit_NeoPixel
+#######################################
+# Class
+#######################################
+
+Bluebird_CircuitPlayground	KEYWORD1
+
+#######################################
+# Methods and Functions
+#######################################	
+
+begin			KEYWORD2
+playTone		KEYWORD2
+lightSensor		KEYWORD2
+colorWheel		KEYWORD2
+senseColor		KEYWORD2
+motionX			KEYWORD2
+motionY			KEYWORD2
+motionZ			KEYWORD2
+rotationX		KEYWORD2
+rotationY		KEYWORD2
+rotationZ		KEYWORD2
+
+
+#######################################
+# Constants
+#######################################
+
+BLUEBIRD_NEOPIXELPIN		LITERAL1
+BLUEBIRD_BUZZER				LITERAL1
+BLUEBIRD_LIGHTSENSOR		LITERAL1
+BLUEBIRD_WIRE_INT			LITERAL1
+BLUEBIRD_COLOR_ENABLE		LITERAL1
+BLUEBIRD_ICM_ADDRESS		LITERAL1
+
+
+
