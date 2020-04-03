@@ -15,7 +15,7 @@
 //* Includes
 //******************************************************************************
 
-#include "CP_Firmata.h"
+#include "TK_Firmata.h"
 #include "HardwareSerial.h"
 
 extern "C" {

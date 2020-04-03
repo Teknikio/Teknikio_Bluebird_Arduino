@@ -1,10 +1,10 @@
 #######################################
-# Syntax Coloring Map For Adafruit_NeoPixel
+# Syntax Coloring Map For Bluebird
 #######################################
 # Class
 #######################################
 
-Bluebird_CircuitPlayground	KEYWORD1
+bluebird	KEYWORD1
 
 #######################################
 # Methods and Functions
@@ -21,6 +21,7 @@ motionZ			KEYWORD2
 rotationX		KEYWORD2
 rotationY		KEYWORD2
 rotationZ		KEYWORD2
+getTemperature  KEYWORD2
 
 
 #######################################

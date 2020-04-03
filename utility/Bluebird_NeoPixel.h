@@ -1,26 +1,26 @@
 /*!
- * This is part of Adafruit's NeoPixel library for the Arduino platform,
+ * This is part of BLUEBIRD's NeoPixel library for the Arduino platform,
  * allowing a broad range of microcontroller boards (most AVR boards,
- * many ARM devices, ESP8266 and ESP32, among others) to control Adafruit
+ * many ARM devices, ESP8266 and ESP32, among others) to control BLUEBIRD
  * NeoPixels, FLORA RGB Smart Pixels and compatible devices -- WS2811,
  * WS2812, WS2812B, SK6812, etc.
  *
- * Adafruit invests time and resources providing this open source code,
- * please support Adafruit and open-source hardware by purchasing products
- * from Adafruit!
+ * BLUEBIRD invests time and resources providing this open source code,
+ * please support BLUEBIRD and open-source hardware by purchasing products
+ * from BLUEBIRD!
  *
- * Written by Phil "Paint Your Dragon" Burgess for Adafruit Industries,
+ * Written by Phil "Paint Your Dragon" Burgess for BLUEBIRD Industries,
  * with contributions by PJRC, Michael Miller and other members of the
  * open source community.
  *
- * This file is part of the Adafruit_NeoPixel library.
+ * This file is part of the BLUEBIRD_NeoPixel library.
  *
- * Adafruit_NeoPixel is free software: you can redistribute it and/or
+ * BLUEBIRD_NeoPixel is free software: you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
  *
- * Adafruit_NeoPixel is distributed in the hope that it will be useful,
+ * BLUEBIRD_NeoPixel is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Lesser General Public License for more details.
@@ -31,8 +31,8 @@
  *
  */
 
-#ifndef ADAFRUIT_CPLAY_NEOPIXEL_H
-#define ADAFRUIT_CPLAY_NEOPIXEL_H
+#ifndef BLUEBIRD_NEOPIXEL_H
+#define BLUEBIRD_NEOPIXEL_H
 
 #ifdef ARDUINO
   #if (ARDUINO >= 100)
@@ -43,13 +43,10 @@
   #endif
 #endif
 
-#ifdef TARGET_LPC1768
-  #include <Arduino.h>
-#endif
 
 // The order of primary colors in the NeoPixel data stream can vary among
 // device types, manufacturers and even different revisions of the same
-// item.  The third parameter to the Adafruit_NeoPixel constructor encodes
+// item.  The third parameter to the BLUEBIRD_NeoPixel constructor encodes
 // the per-pixel byte offsets of the red, green and blue primaries (plus
 // white, if present) in the data stream -- the following #defines provide
 // an easier-to-use named version for each permutation. e.g. NEO_GRB
@@ -120,9 +117,7 @@
 // other MCUs to remove v1 support and save a little space.
 
 #define NEO_KHZ800 0x0000 ///< 800 KHz data transmission
-#ifndef __AVR_ATtiny85__
 #define NEO_KHZ400 0x0100 ///< 400 KHz data transmission
-#endif
 
 // If 400 KHz support is enabled, the third parameter to the constructor
 // requires a 16-bit value (in order to select 400 vs 800 KHz speed).
@@ -130,12 +125,12 @@
 // is sufficient to encode pixel color order, saving some space.
 
 #ifdef NEO_KHZ400
-typedef uint16_t neoPixelType; ///< 3rd arg to Adafruit_NeoPixel constructor
+typedef uint16_t neoPixelType; ///< 3rd arg to BLUEBIRD_NeoPixel constructor
 #else
-typedef uint8_t  neoPixelType; ///< 3rd arg to Adafruit_NeoPixel constructor
+typedef uint8_t  neoPixelType; ///< 3rd arg to BLUEBIRD_NeoPixel constructor
 #endif
 
-// These two tables are declared outside the Adafruit_NeoPixel class
+// These two tables are declared outside the BLUEBIRD_NeoPixel class
 // because some boards may require oldschool compilers that don't
 // handle the C++11 constexpr keyword.
 
@@ -147,7 +142,6 @@ for x in range(256):
     if x&15 == 15: print
 */
 
-#if !defined(ADAFRUIT_NEOPIXEL_H)
 static const uint8_t PROGMEM _NeoPixelSineTable[256] = {
   128,131,134,137,140,143,146,149,152,155,158,162,165,167,170,173,
   176,179,182,185,188,190,193,196,198,201,203,206,208,211,213,215,
@@ -191,21 +185,19 @@ static const uint8_t PROGMEM _NeoPixelGammaTable[256] = {
   150,152,154,156,158,160,162,164,166,168,170,172,174,176,178,180,
   182,184,186,188,191,193,195,197,199,202,204,206,209,211,213,215,
   218,220,223,225,227,230,232,235,237,240,242,245,247,250,252,255};
-#endif
-
 /*! 
     @brief  Class that stores state and functions for interacting with
-            Adafruit NeoPixels and compatible devices.
+            BLUEBIRD NeoPixels and compatible devices.
 */
-class Adafruit_CPlay_NeoPixel {
+class Bluebird_NeoPixel {
 
  public:
 
   // Constructor: number of LEDs, pin number, LED type
-  Adafruit_CPlay_NeoPixel(uint16_t n, uint16_t pin=6,
+  Bluebird_NeoPixel(uint16_t n, uint16_t pin=6,
     neoPixelType type=NEO_GRB + NEO_KHZ800);
-  Adafruit_CPlay_NeoPixel(void);
-  ~Adafruit_CPlay_NeoPixel();
+  Bluebird_NeoPixel(void);
+  ~Bluebird_NeoPixel();
 
   void              begin(void);
   void              show(void);
@@ -255,40 +247,11 @@ class Adafruit_CPlay_NeoPixel {
   */
   int16_t           getPin(void) const { return pin; };
   /*!
-    @brief   Return the number of pixels in an Adafruit_NeoPixel strip object.
+    @brief   Return the number of pixels in an BLUEBIRD_NeoPixel strip object.
     @return  Pixel count (0 if not set).
   */
   uint16_t          numPixels(void) const { return numLEDs; }
   uint32_t          getPixelColor(uint16_t n) const;
-  /*!
-    @brief   An 8-bit integer sine wave function, not directly compatible
-             with standard trigonometric units like radians or degrees.
-    @param   x  Input angle, 0-255; 256 would loop back to zero, completing
-                the circle (equivalent to 360 degrees or 2 pi radians).
-                One can therefore use an unsigned 8-bit variable and simply
-                add or subtract, allowing it to overflow/underflow and it
-                still does the expected contiguous thing.
-    @return  Sine result, 0 to 255, or -128 to +127 if type-converted to
-             a signed int8_t, but you'll most likely want unsigned as this
-             output is often used for pixel brightness in animation effects.
-  */
-  static uint8_t    sine8(uint8_t x) {
-    return pgm_read_byte(&_NeoPixelSineTable[x]); // 0-255 in, 0-255 out
-  }
-  /*!
-    @brief   An 8-bit gamma-correction function for basic pixel brightness
-             adjustment. Makes color transitions appear more perceptially
-             correct.
-    @param   x  Input brightness, 0 (minimum or off/black) to 255 (maximum).
-    @return  Gamma-adjusted brightness, can then be passed to one of the
-             setPixelColor() functions. This uses a fixed gamma correction
-             exponent of 2.6, which seems reasonably okay for average
-             NeoPixels in average tasks. If you need finer control you'll
-             need to provide your own gamma-correction function instead.
-  */
-  static uint8_t    gamma8(uint8_t x) {
-    return pgm_read_byte(&_NeoPixelGammaTable[x]); // 0-255 in, 0-255 out
-  }
   /*!
     @brief   Convert separate red, green and blue values into a single
              "packed" 32-bit RGB color.
@@ -331,7 +294,6 @@ class Adafruit_CPlay_NeoPixel {
              control you'll need to provide your own gamma-correction
              function instead.
   */
-  static uint32_t   gamma32(uint32_t x);
 
  protected:
 
@@ -349,14 +311,7 @@ class Adafruit_CPlay_NeoPixel {
   uint8_t           bOffset;    ///< Index of blue byte
   uint8_t           wOffset;    ///< Index of white (==rOffset if no white)
   uint32_t          endTime;    ///< Latch timing reference
-#ifdef __AVR__
-  volatile uint8_t *port;       ///< Output PORT register
-  uint8_t           pinMask;    ///< Output PORT bitmask
-#endif
-#ifdef ARDUINO_ARCH_STM32
-  GPIO_TypeDef *gpioPort;       ///< Output GPIO PORT
-  uint32_t gpioPin;             ///< Output GPIO PIN
-#endif
+
 };
 
-#endif // ADAFRUIT_NEOPIXEL_H
+#endif // BLUEBIRD_NEOPIXEL_H

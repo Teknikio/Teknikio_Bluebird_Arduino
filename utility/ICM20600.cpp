@@ -1,3 +1,44 @@
+/*!
+ *
+ * @section intro_sec Introduction
+ *
+ * This is adapted by Teknikio  from Seeed Studio ICM20600 driver for the
+ * Arduino platform.  It is designed specifically to work with the
+ * Teknikio Bluebird boards.
+ *
+ * Seeed Studio invests time and resources providing this open source code,
+ * please support Seeed studio and open-source hardware by purchasing
+ * products from Seeed Studio!
+ *
+ *
+ * @section author Author
+ *
+ * Written by somes for Seeed Studio Industries.
+ *
+ * @section license License
+ *
+ * Copyright (c) 2012 Seeed Technology Inc.
+
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ *
+ */
+
 #include "ICM20600.h"
 
 ICM20600::ICM20600(bool AD0) {
