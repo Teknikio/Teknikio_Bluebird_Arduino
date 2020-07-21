@@ -23,6 +23,18 @@
 
 #include "Bluebird_Teknikio.h"
 
+extern "C" {
+  void TIMER2_IRQHandler(void) {  
+    if ((NRF_TIMER2->EVENTS_COMPARE[0] != 0) &&
+      ((NRF_TIMER2->INTENSET & TIMER_INTENSET_COMPARE0_Msk) != 0)) {
+        NRF_TIMER2->EVENTS_COMPARE[0] = 0; // Clear compare register 0 event
+      bluebird.matrixHandler();
+      NRF_TIMER2->CC[0] += 100;
+    }  
+  }
+}
+
+
 /**************************************************************************/
 /*!
     @brief  Set up the Bluebird hardware
@@ -38,13 +50,14 @@ bool Bluebird::begin(uint8_t brightness) {
   pinMode(BLUEBIRD_WIRE_INT,INPUT);
   pinMode(BLUEBIRD_LIGHTSENSOR,INPUT);
   
-
   digitalWrite(BLUEBIRD_BUZZER      , LOW); 
   digitalWrite(BLUEBIRD_COLOR_ENABLE, LOW); 
 
+  row_index = 0;
+  col_index = 0;
+
   Wire.begin();
 
-  //strip = Bluebird_NeoPixel(1,BLUEBIRD_NEOPIXELPIN,NEO_GRB + NEO_KHZ800);
   strip = Bluebird_NeoPixel();
   strip.updateType(NEO_GRB + NEO_KHZ800);
   strip.updateLength(1);
@@ -56,6 +69,11 @@ bool Bluebird::begin(uint8_t brightness) {
 
   icm20600 = ICM20600(BLUEBIRD_ICM_ADDRESS);
   icm20600.initialize();
+
+  servo0.attach(PIN_SERVO0);
+  servo1.attach(PIN_SERVO1);
+
+  startTimer();
 
   min_red = 255;
   min_green = 255;
@@ -154,6 +172,39 @@ void Bluebird::senseColor(uint8_t& red, uint8_t& green, uint8_t& blue) {
     blue = (((raw_blue/4)-min_blue)*100)/max_blue;
   }
   
+}
+/*!
+  @brief   Adjust output brightness. Does not immediately affect what's
+           currently displayed on the LEDs. 
+  @param   b  Brightness setting, 0=minimum (off), 255=brightest. with a logarithmic scale
+  @note    This was intended for one-time use in one's setup() function,
+           not as an animation effect in itself. Because of the way this
+           library "pre-multiplies" LED colors in RAM, changing the
+           brightness is often a "lossy" operation -- what you write to
+           pixels isn't necessary the same as what you'll read back.
+           Repeated brightness changes using this function exacerbate the
+           problem. Smart programs therefore treat the strip as a
+           write-only resource, maintaining their own state to render each
+           frame of an animation, not relying on read-modify-write.
+*/
+void Bluebird::setBrightness(uint8_t b) {
+  int valeur;
+
+  if (b == 0){
+    strip.setBrightness(0);
+    strip.show();
+  }
+  else if(b <6){
+    valeur = int(255.0*log10((float(6)*10.0/255.0)));
+    strip.setBrightness(valeur);
+    strip.show();
+  }
+  else{
+    valeur = int(255.0*log10((float(b)*10.0/255.0)));
+    strip.setBrightness(valeur);
+    strip.show();
+  }
+
 }
 
 /**************************************************************************/
@@ -303,6 +354,249 @@ int16_t Bluebird::rotationZ(){
 /**************************************************************************/
 int16_t Bluebird::getTemperature(){
   return bluebird.icm20600.getTemperature();
+}
+/**************************************************************************/
+/*!
+    @brief reset the LED shield
+    @returns none
+*/
+/**************************************************************************/
+void Bluebird::resetLedMatrix(){
+  pinMode(BLUEBIRD_LED_1, INPUT);
+  pinMode(BLUEBIRD_LED_2, INPUT);
+  pinMode(BLUEBIRD_LED_3, INPUT);
+  pinMode(BLUEBIRD_LED_4, INPUT);
+  pinMode(BLUEBIRD_LED_5, INPUT);
+  pinMode(BLUEBIRD_LED_6, INPUT);
+  digitalWrite(BLUEBIRD_LED_1, LOW);
+  digitalWrite(BLUEBIRD_LED_2, LOW);
+  digitalWrite(BLUEBIRD_LED_3, LOW);
+  digitalWrite(BLUEBIRD_LED_4, LOW);
+  digitalWrite(BLUEBIRD_LED_5, LOW);
+  digitalWrite(BLUEBIRD_LED_6, LOW);
+}
+
+/**************************************************************************/
+/*!
+    @brief reset the LED shield
+    @returns none
+*/
+/**************************************************************************/
+void Bluebird::setLedMatrix(int row,int column){
+  int pin_high;
+  int pin_low;
+
+  resetLedMatrix();
+  
+  if(row == 1   && column == 1)
+  {
+    pin_high  = BLUEBIRD_LED_6;
+    pin_low   = BLUEBIRD_LED_1;
+  }
+  else if(row == 1 && column == 2)
+  {
+    pin_high  = BLUEBIRD_LED_6;
+    pin_low   = BLUEBIRD_LED_2;
+  }
+  else if(row == 1 && column == 3)
+  {
+    pin_high  = BLUEBIRD_LED_6;
+    pin_low   = BLUEBIRD_LED_3;
+  }
+  else if(row == 1 && column == 4)
+  {
+    pin_high  = BLUEBIRD_LED_6;
+    pin_low   = BLUEBIRD_LED_4;
+  }
+  else if(row == 1 && column == 5)
+  {
+    pin_high  = BLUEBIRD_LED_6;
+    pin_low   = BLUEBIRD_LED_5;
+  }
+  else if(row == 1 && column == 6)
+  {
+    pin_high  = BLUEBIRD_LED_5;
+    pin_low   = BLUEBIRD_LED_6; 
+  }
+  else if(row == 2 && column == 1)
+  {
+    pin_high  = BLUEBIRD_LED_5;
+    pin_low   = BLUEBIRD_LED_1; 
+  }
+  else if(row == 2 && column == 2)
+  { 
+    pin_high  = BLUEBIRD_LED_5;
+    pin_low   = BLUEBIRD_LED_2; 
+  }
+  else if(row == 2 && column == 3)
+  {
+    pin_high  = BLUEBIRD_LED_5;
+    pin_low   = BLUEBIRD_LED_3; 
+  }
+  else if(row == 2 && column == 4)
+  {
+    pin_high  = BLUEBIRD_LED_5;
+    pin_low   = BLUEBIRD_LED_4; 
+  }
+  else if(row == 2 && column == 5)
+  { 
+    pin_high  = BLUEBIRD_LED_4;
+    pin_low   = BLUEBIRD_LED_5; 
+  }
+  else if(row == 2 && column == 6)
+  { 
+    pin_high  = BLUEBIRD_LED_4;
+    pin_low   = BLUEBIRD_LED_6; 
+  }
+  else if(row == 3 && column == 1)
+  { 
+    pin_high  = BLUEBIRD_LED_4;
+    pin_low   = BLUEBIRD_LED_1; 
+  }
+  else if(row == 3 && column == 2)
+  { 
+    pin_high  = BLUEBIRD_LED_4;
+    pin_low   = BLUEBIRD_LED_2; 
+  }
+  else if(row == 3 && column == 3)
+  { 
+    pin_high  = BLUEBIRD_LED_4;
+    pin_low   = BLUEBIRD_LED_3; 
+  }
+  else if(row == 3 && column == 4)
+  { 
+    pin_high  = BLUEBIRD_LED_3;
+    pin_low   = BLUEBIRD_LED_4; 
+  }
+  else if(row == 3 && column == 5)
+  { 
+    pin_high  = BLUEBIRD_LED_3;
+    pin_low   = BLUEBIRD_LED_5; 
+  }
+  else if(row == 3 && column == 6)
+  { 
+    pin_high  = BLUEBIRD_LED_3;
+    pin_low   = BLUEBIRD_LED_6; 
+  }
+  else if(row == 4 && column == 1)
+  { 
+    pin_high  = BLUEBIRD_LED_3;
+    pin_low   = BLUEBIRD_LED_1; 
+  }
+  else if(row == 4 && column == 2)
+  { 
+    pin_high  = BLUEBIRD_LED_3;
+    pin_low   = BLUEBIRD_LED_2; 
+  }
+  else if(row == 4 && column == 3)
+  { 
+    pin_high  = BLUEBIRD_LED_2;
+    pin_low   = BLUEBIRD_LED_3; 
+  }
+  else if(row == 4 && column == 4)
+  { 
+    pin_high  = BLUEBIRD_LED_2;
+    pin_low   = BLUEBIRD_LED_4; 
+  }
+  else if(row == 4 && column == 5)
+  { 
+    pin_high  = BLUEBIRD_LED_2;
+    pin_low   = BLUEBIRD_LED_5; 
+  }
+  else if(row == 4 && column == 6)
+  { 
+    pin_high  = BLUEBIRD_LED_2;
+    pin_low   = BLUEBIRD_LED_6; 
+  }
+
+  else if(row == 5 && column == 1)
+  { 
+    pin_high  = BLUEBIRD_LED_2;
+    pin_low   = BLUEBIRD_LED_1; 
+  }
+  else if(row == 5 && column == 2)
+  { 
+    pin_high  = BLUEBIRD_LED_1;
+    pin_low   = BLUEBIRD_LED_2; 
+  }
+  else if(row == 5 && column == 3)
+  { 
+    pin_high  = BLUEBIRD_LED_1;
+    pin_low   = BLUEBIRD_LED_3; 
+  }
+  else if(row == 5 && column == 4)
+  { 
+    pin_high  = BLUEBIRD_LED_1;
+    pin_low   = BLUEBIRD_LED_4; 
+  }
+  else if(row == 5 && column == 5)
+  { 
+    pin_high  = BLUEBIRD_LED_1;
+    pin_low   = BLUEBIRD_LED_5; 
+  }
+  else if(row == 5 && column == 6)
+  { 
+    pin_high  = BLUEBIRD_LED_1;
+    pin_low   = BLUEBIRD_LED_6; 
+  }
+
+  if( pin_high != 0 && pin_low != 0)
+  {
+    pinMode(pin_high, OUTPUT);
+    pinMode(pin_low, OUTPUT);
+    digitalWrite(pin_high, HIGH);
+    digitalWrite(pin_low,LOW);
+  }
+}
+
+void Bluebird::startTimer(void) {
+  NRF_TIMER2->MODE = TIMER_MODE_MODE_Timer; // Set the timer in Counter Mode
+  NRF_TIMER2->TASKS_CLEAR = 1; // clear the task first to be usable for later
+  NRF_TIMER2->PRESCALER = 5;
+  NRF_TIMER2->BITMODE =
+      TIMER_BITMODE_BITMODE_16Bit; // Set counter to 16 bit resolution
+  NRF_TIMER2->CC[0] = 1000;        // Set value for TIMER2 compare register 0
+  NRF_TIMER2->CC[1] = 0;           // Set value for TIMER2 compare register 1
+
+  // Enable interrupt on Timer 2, both for CC[0] and CC[1] compare match events
+  NRF_TIMER2->INTENSET =
+      (TIMER_INTENSET_COMPARE0_Enabled << TIMER_INTENSET_COMPARE0_Pos);
+  NVIC_EnableIRQ(TIMER2_IRQn);
+
+  NRF_TIMER2->TASKS_START = 1; // Start TIMER2
+}
+
+/*!
+ *    @brief Matrix object function called by IRQ handler for each row
+ *    This is not optimized at all but its not so bad either!
+ */
+void Bluebird::matrixHandler(void) {
+  // disable current row
+  if(ledpattern[row_index][col_index] == 1)
+  {
+    setLedMatrix(row_index+1,col_index+1);
+  }
+
+  if( row_index<(ROW_SIZE-1))
+  {
+    row_index++;
+  }
+  else
+  {
+    row_index = 0;
+      if( col_index<(COLUMN_SIZE -1))
+      {
+        col_index++;
+      }
+      else
+      {
+        col_index = 0;
+      }
+    }
+}
+
+void Bluebird::changepattern(void *m_ledpattern){
+  memcpy(*ledpattern, m_ledpattern, sizeof(ledpattern));  
 }
 // instantiate static
 Bluebird bluebird;
