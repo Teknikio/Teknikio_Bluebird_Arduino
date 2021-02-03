@@ -168,8 +168,8 @@ public:
 
   Bluebird_NeoPixel strip; ///< the neopixel strip object
   ICM20600 icm20600;
-  Servo servo1;
-  Servo servo2;
+  Servo servoL;
+  Servo servoR;
 
   uint8_t min_red;
   uint8_t min_green;
@@ -196,7 +196,7 @@ public:
   int16_t rotationY(void);
   int16_t rotationZ(void);
 
-  int16_t getTemperature(void);
+  float getTemperature(void);
 
 
 /**************************************************************************/
@@ -247,7 +247,7 @@ public:
 
   void resetLedMatrix(void);
 
-  void setLedMatrix(int row,int column);
+  void setLEDMatrix(int row,int column);
 
   void startTimer(void);
 

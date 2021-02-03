@@ -1,11 +1,16 @@
 #include <Bluebird_Teknikio.h>
 
-/*Calibrate the light sensor on Bluebird to sense color using the reflection fomr the Neopixel
+/*Calibrate the light sensor on Bluebird to sense color using the reflection from the Neopixel
 You will need a white object (like paper) and a black object to teach the sensor these colors.
 
-Send any charachter in serial console to begin calibration and follow prompts
-When calibration is finished, test sensor with differnt colors
-Color reported as R,G,B percentage */
+TO BEGIN CALIBRATION: 
+
+Send any character in serial console and follow prompts
+When calibration is finished, test sensor with different colors
+Color reported as R,G,B percentage 
+
+*/
+
 
 bool calibration = false;
 bool tmp_status = true;
