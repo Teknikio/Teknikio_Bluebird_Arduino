@@ -70,8 +70,8 @@ bool Bluebird::begin(uint8_t brightness) {
   icm20600 = ICM20600(BLUEBIRD_ICM_ADDRESS);
   icm20600.initialize();
 
-  servo0.attach(PIN_SERVO0);
-  servo1.attach(PIN_SERVO1);
+  servoL.attach(PIN_SERVO_L);
+  servoR.attach(PIN_SERVO_R);
 
   startTimer();
 
@@ -382,7 +382,7 @@ void Bluebird::resetLedMatrix(){
     @returns none
 */
 /**************************************************************************/
-void Bluebird::setLedMatrix(int row,int column){
+void Bluebird::setLEDMatrix(int row,int column){
   int pin_high;
   int pin_low;
 
@@ -574,7 +574,7 @@ void Bluebird::matrixHandler(void) {
   // disable current row
   if(ledpattern[row_index][col_index] == 1)
   {
-    setLedMatrix(row_index+1,col_index+1);
+    setLEDMatrix(row_index+1,col_index+1);
   }
 
   if( row_index<(ROW_SIZE-1))
