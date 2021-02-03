@@ -229,9 +229,8 @@ class ICM20600 {
     int16_t getRawGyroscopeY(void);
     int16_t getRawGyroscopeZ(void);
 
-    // Yes there is a digital-output temperature sensor in ICM20600,
-    // return a integer centigrade degree
-    int16_t getTemperature(void);
+    // Return temperature in degrees Celsius
+    float getTemperature(void);
 
   private:
     uint8_t _addr;

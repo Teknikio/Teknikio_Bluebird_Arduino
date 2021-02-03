@@ -196,7 +196,7 @@ public:
   int16_t rotationY(void);
   int16_t rotationZ(void);
 
-  int16_t getTemperature(void);
+  float getTemperature(void);
 
 
 /**************************************************************************/

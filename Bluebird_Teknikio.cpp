@@ -352,7 +352,7 @@ int16_t Bluebird::rotationZ(){
     @returns value in °C
 */
 /**************************************************************************/
-int16_t Bluebird::getTemperature(){
+float Bluebird::getTemperature(){
   return bluebird.icm20600.getTemperature();
 }
 /**************************************************************************/

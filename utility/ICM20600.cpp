@@ -453,11 +453,11 @@ int16_t ICM20600::getRawGyroscopeZ(void) {
     return ((int16_t)_buffer[0] << 8) + _buffer[1];
 }
 
-int16_t ICM20600::getTemperature(void) {
-    uint16_t rawdata;
+float ICM20600::getTemperature(void) {
+    int16_t rawdata;
     I2Cdev::readBytes(_addr, ICM20600_TEMP_OUT_H, 2, _buffer);
-    rawdata = (((uint16_t)_buffer[0]) << 8) + _buffer[1];
-    return (int16_t)(rawdata / 327 + 25);
+    rawdata = (((int16_t)_buffer[0]) << 8) + _buffer[1];
+    return (float)rawdata / 326.8 + 25;
 }
 
 void ICM20600::reset() {
