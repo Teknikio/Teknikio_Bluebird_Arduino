@@ -21,6 +21,6 @@ The Teknikio bluebird library makes use of a Adafruit's existing library for Neo
 BSD license, check license.txt for more information. All text above must be included in any redistribution
 
 ## Installation
-To download. click the DOWNLOAD ZIP button, rename the uncompressed folder Bluebird_Circuit_Playground. Check that the Bluebird_Circuit_Playground folder contains Bluebird_Circuit_Playground.cpp and Bluebird_Circuit_Playground.h
+To download. click the DOWNLOAD ZIP button. Check that the Bluebird_Arduinio_Master folder contains Bluebird_Teknikio.cpp and Bluebird_Teknikio.h
 
-Place the Bluebird_Circuit_Playground library folder your arduinosketchfolder/libraries/ folder. You may need to create the libraries subfolder if its your first library. Restart the IDE.
+Place the Bluebird_Teknikio library folder your arduinos/libraries/ folder. You may need to create the libraries subfolder if its your first library. Restart the IDE.
