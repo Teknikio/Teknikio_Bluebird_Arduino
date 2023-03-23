@@ -1,6 +1,6 @@
 # Teknikio Bluebird Library
 
-This driver is for the Teknikio Bluebird (https://www.teknikio.com/pages/bluebird), and to provide easy usage of function.
+This driver is for the Teknikio Bluebird (https://www.teknikio.com/collections/parts/products/bluebird-1), and to provide easy usage of function.
 
 ## About the Bluebird ##
 
